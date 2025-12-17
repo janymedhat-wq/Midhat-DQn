@@ -10,7 +10,7 @@ Each project focuses on **stability, sample efficiency, and convergence to super
 <p align="center">
   <img src="website/boxing_500.gif" width="30%" />
   <img src="website/ponggif.gif" width="30%" />
-  <img src="website/qbert.gif" width="30%" />
+  <img src="website/interactive.gif" width="30%" />
 </p>
 
 <p align="center">
