@@ -14,7 +14,7 @@ Each project focuses on **stability, sample efficiency, and convergence to super
 </p>
 
 <p align="center">
-  <img src="gifs/pacman.gif" width="30%" />
+  <img src="website/flappy-bird.gif" width="30%" />
   <img src="gifs/qbert.gif" width="30%" />
   <img src="gifs/flappybird.gif" width="30%" />
 </p>
