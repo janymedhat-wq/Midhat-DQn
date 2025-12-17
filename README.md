@@ -19,7 +19,6 @@ Each project focuses on **stability, sample efficiency, and convergence to super
   <img src="gifs/flappybird.gif" width="30%" />
 </p>
 
-> All GIFs are generated from **trained checkpoints**, not random or early-stage agents.
 
 ---
 
