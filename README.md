@@ -8,9 +8,9 @@ Each project focuses on **stability, sample efficiency, and convergence to super
 ## 🎮 Trained Agent Performance (Live Rollouts)
 
 <p align="center">
-  <img src="gifs/breakout.gif" width="30%" />
-  <img src="gifs/pong.gif" width="30%" />
-  <img src="gifs/boxing.gif" width="30%" />
+  <img src="website/boxing_500.gif" width="30%" />
+  <img src="website/ponggif.gif" width="30%" />
+  <img src="website/qbert.gif" width="30%" />
 </p>
 
 <p align="center">
