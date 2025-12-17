@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Q*bert ES Agent - Project Documentation</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles for a monochrome, high-contrast look, consistent with the previous document */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff; /* White background */
+            color: #1f2937; /* Very dark gray text */
+        }
+        .container-border {
+            border: 2px solid #1f2937; /* Strong black border */
+            box-shadow: 6px 6px 0px 0px #9ca3af; /* Simple grayscale shadow */
+        }
+        .code-block {
+            background-color: #1f2937; /* Dark background for code */
+            color: #e5e7eb; /* Light gray text for contrast */
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            border: 1px solid #9ca3af;
+        }
+        /* Ensure max-w-7xl is fully responsive */
+        .max-w-7xl {
+             max-width: 100%;
+        }
+        /* Style for the GIF display area */
+        .gif-display-area {
+            min-height: 12rem;
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+
+        <!-- Header Section -->
+        <header class="text-center mb-12 sm:mb-16">
+            <div class="inline-block p-4 container-border rounded-lg bg-yellow-100">
+                <h1 class="text-4xl sm:text-5xl font-extrabold mb-2 text-yellow-800">
+                    Q*BERT: EVOLUTIONARY STRATEGIES AGENT
+                </h1>
+                <p class="text-lg sm:text-xl font-medium text-gray-700">
+                    Direct Policy Search using Neuroevolution
+                </p>
+            </div>
+        </header>
+
+        <!-- Agent Demo Section (STATIC GIF Placeholder) -->
+        <div class="mt-8 sm:mt-10 mx-auto max-w-xl container-border rounded-lg overflow-hidden p-3 bg-gray-100">
+            <p class="text-sm font-semibold mb-2 text-center text-gray-800">AGENT PERFORMANCE DEMO</p>
+            
+            <!-- STATIC GIF Display Area -->
+            <div class="gif-display-area w-full aspect-video bg-gray-200 border border-gray-400 rounded-lg flex items-center justify-center relative overflow-hidden">
+                <!-- Static placeholder for the Q*bert GIF -->
+                <img src="qbert.gif" 
+                     alt="Static Placeholder for Agent Performance GIF" 
+                     class="w-full h-full object-contain">
+                <p class="absolute text-gray-600 text-center p-4 text-sm font-medium">
+                  
+                </p>
+            </div>
+
+            <p class="text-xs text-center text-gray-600 mt-2">
+                *The final game will be hosted at <a href="https://qbert.vercel.app" class="text-blue-600 underline font-mono">qbert.vercel.app</a>*
+            </p>
+        </div>
+
+        <!-- Project Overview Section -->
+        <section class="mb-12 sm:mb-16 mt-16">
+            <div class="pb-2 mb-6 border-b-2 border-gray-800">
+                <h2 class="text-2xl sm:text-3xl font-bold">
+                    Project Goal: Scaling Black-Box Optimization
+                </h2>
+            </div>
+            <p class="text-base sm:text-lg text-gray-700 mb-6">
+                Q*bert presents a unique challenge: the state space is complex, and the rewards (changing cube colors, avoiding enemies) are often delayed. We utilize **Evolutionary Strategies (ES)**—a black-box optimization method—to directly optimize the weights ($\theta$) of a neural network policy, avoiding complex gradient calculations and enabling massive parallelization.
+            </p>
+            <ul class="list-disc list-inside space-y-2 text-base sm:text-lg text-gray-700 ml-4">
+                <li>**Black-Box Optimization:** The algorithm only requires a fitness score (reward) from the environment; it does not need backpropagation or value function approximation.</li>
+                <li>**Scalability:** ES updates rely only on scalar fitness scores, making it significantly easier to distribute across hundreds of CPUs for rapid training compared to gradient-based RL.</li>
+                <li>**Sparse Rewards:** ES is robust to sparse reward signals, as it evaluates the full outcome (total score) of a policy over an entire episode.</li>
+            </ul>
+        </section>
+
+        <!-- Policy Network Architecture Section -->
+        <section class="mb-12 sm:mb-16 mt-16 sm:mt-20">
+            <div class="pb-2 mb-6 border-b-2 border-gray-800">
+                <h2 class="text-2xl sm:text-3xl font-bold">
+                    Policy Network ($\pi_{\theta}$) Architecture
+                </h2>
+            </div>
+
+            <p class="text-base sm:text-lg text-gray-700 mb-6">
+                The policy network maps the game state (e.g., the Q*bert's position, enemy positions, and cube colors) to the agent's action space (Jump Up-Left, Up-Right, Down-Left, Down-Right).
+            </p>
+
+            <div class="code-block">
+                <pre><code>/**
+* Policy Network (Feed-Forward or CNN)
+* Input: Flattened state vector (S) or raw pixel frame (I)
+* Output: Probability distribution or deterministic action (A)
+*/
+class QbertPolicy {
+    constructor(state_dim, num_actions) {
+        // For a game with abstract state representation (e.g., positions on the grid):
+        this.network = new FeedForwardNetwork([
+            { units: state_dim, activation: 'relu' },
+            { units: 128, activation: 'relu' },
+            { units: 64, activation: 'relu' },
+            { units: num_actions, activation: 'softmax' } // Output layer for 4 actions
+        ]);
+
+        this.weights = this.network.getFlattenedWeights(); // The parameter vector θ
+    }
+
+    /**
+     * Executes the policy for a given state.
+     */
+    getAction(state) {
+        // action_probs = this.network.forward(state);
+        // return chooseAction(action_probs); // e.g., sampling from the softmax distribution
+    }
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- Evolutionary Optimization Loop -->
+        <section class="mb-12 sm:mb-16 mt-12">
+            <div class="pb-2 mb-6 border-b-2 border-gray-800">
+                <h2 class="text-2xl sm:text-3xl font-bold">
+                    Evolutionary Strategy (ES) Optimization
+                </h2>
+            </div>
+
+            <p class="text-base sm:text-lg text-gray-700 mb-6">
+                The core ES loop is surprisingly simple, focusing on "guess and check" optimization over the weight vector ($\theta$). We generate $N$ variations (perturbations) of the current best policy, evaluate their fitness in parallel, and update the central policy based on which variations performed best.
+            </p>
+
+            <div class="code-block">
+                <pre><code>// Pseudocode for the ES optimization step
+// θ: Current parent policy parameters (weights)
+// N: Population size (number of workers)
+// σ: Standard deviation (noise scale)
+// α: Learning rate
+
+function evolve_policy(θ, N, σ, α) {
+    let rewards = [];
+    let perturbations = [];
+
+    // 1. Parallel Perturbation & Evaluation
+    for (i = 0; i < N; i++) {
+        // Generate random noise vector (ϵ_i ~ N(0, I))
+        const ϵ_i = sampleGaussianNoise(θ.length);
+
+        // Create perturbed child policy parameters: θ_i = θ + σ * ϵ_i
+        const θ_i = θ.add(ϵ_i.multiply(σ));
+
+        // Store the noise vector (perturbation)
+        perturbations.push(ϵ_i);
+
+        // Evaluate Fitness (F) in the environment
+        // F_i = run_qbert_episode(θ_i)
+        const F_i = evaluateFitness(θ_i);
+        rewards.push(F_i);
+    }
+
+    // 2. Normalize and Rank Rewards
+    const normalized_rewards = normalize(rewards);
+
+    // 3. Update Parent Policy (Gradient Estimation)
+    let update_vector = zeros(θ.length);
+
+    // Update is a weighted sum of perturbations (ϵ), weighted by their normalized reward (F)
+    for (i = 0; i < N; i++) {
+        update_vector = update_vector.add(perturbations[i].multiply(normalized_rewards[i]));
+    }
+
+    // Update Rule: θ_next = θ + α / (N * σ) * update_vector
+    // This is equivalent to an approximate stochastic gradient ascent step.
+    const learning_term = α / (N * σ);
+    θ = θ.add(update_vector.multiply(learning_term));
+    
+    return θ; // Return the new, improved policy parameters
+}</code></pre>
+            </div>
+        </section>
+
+        <footer class="text-center pt-8 border-t-2 border-gray-400 mt-12">
+            <p class="text-gray-600 font-mono text-xs sm:text-sm">A Reinforcement Learning Documentation Project | Targeting <a href="https://qbert.vercel.app" class="text-blue-600 underline hover:text-blue-800">qbert.vercel.app</a></p>
+        </footer>
+    </div>
+</body>
+</html>

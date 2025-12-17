@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pong PPO GAE Agent - Project Documentation</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for a monochrome, high-contrast look */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff; /* White background */
+            color: #1f2937; /* Very dark gray text */
+        }
+        .container-border {
+            border: 2px solid #1f2937; /* Strong black border */
+            box-shadow: 6px 6px 0px 0px #9ca3af; /* Simple grayscale shadow */
+        }
+        .code-block {
+            background-color: #1f2937; /* Dark background for code */
+            color: #e5e7eb; /* Light gray text for contrast */
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            border: 1px solid #9ca3af;
+        }
+        /* Ensure max-width on mobile doesn't break layout */
+        .max-w-7xl {
+             max-width: 100%;
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+
+        <!-- Header & Agent Demo Section -->
+        <header class="text-center mb-12 sm:mb-16">
+            <div class="inline-block p-4 container-border rounded-lg bg-gray-50">
+                <h1 class="text-4xl sm:text-5xl font-extrabold mb-2">
+                    PONG: PPO GAE AGENT
+                </h1>
+                <p class="text-lg sm:text-xl font-medium text-gray-700">
+                    Proximal Policy Optimization (PPO) with Generalized Advantage Estimation (GAE)
+                </p>
+            </div>
+
+            <!-- Demo Area -->
+            <div class="mt-8 sm:mt-10 mx-auto max-w-xl container-border rounded-lg overflow-hidden p-3 bg-gray-100">
+                <p class="text-sm font-semibold mb-2 text-center text-gray-800">AGENT PERFORMANCE DEMO</p>
+                
+                <img
+                    src="ponggif.gif"
+                    onerror="this.onerror=null; this.src='https://placehold.co/700x400/9ca3af/1f2937?text=PLACE+YOUR+PONG+AGENT+GIF+HERE';"
+                    alt="PPO GAE Agent playing Atari Pong"
+                    class="w-full h-auto object-cover container-border rounded"
+                >
+            </div>
+        </header>
+
+        <!-- Project Files and Links Section -->
+        <section class="mb-12 sm:mb-16 mt-8">
+            <div class="pb-2 mb-6 border-b-2 border-gray-800">
+                <h2 class="text-2xl sm:text-3xl font-bold">
+                    Project Files & Resources
+                </h2>
+            </div>
+            <p class="text-base sm:text-lg text-gray-700 mb-4">
+                View the full implementation, including network definitions and environment wrappers, in the complete Jupyter Notebook.
+            </p>
+            <!-- Placeholder Link to Jupyter Notebook -->
+            <a href="DeepRL_pong_modified.ipynb" target="_blank" class="inline-block px-6 py-3 bg-gray-800 text-white font-bold rounded-lg hover:bg-gray-700 transition container-border shadow-lg">
+                View Full Jupyter Notebook <b>{DeepRL\_pong.ipynb}</b>
+            </a>
+            <p class="text-xs mt-2 text-gray-500">
+                (Note: Please replace the $\texttt{https://example.com/...}$ link with your actual public repository URL.)
+            </p>
+        </section>
+
+
+        <!-- PPO Agent Architecture Section -->
+        <section class="mb-12 sm:mb-16 mt-16 sm:mt-20">
+            <div class="pb-2 mb-6 border-b-2 border-gray-800">
+                <h2 class="text-2xl sm:text-3xl font-bold">
+                    The PPO Actor-Critic Architecture
+                </h2>
+            </div>
+
+            <p class="text-base sm:text-lg text-gray-700 mb-6">
+                PPO utilizes an **Actor-Critic** framework. Both the Actor (policy) and the Critic (value function) share convolutional layers for feature extraction, which is crucial for handling the raw pixel input of the Atari environment.
+            </p>
+
+            <div class="code-block">
+                <pre><code>/**
+ * PPO Agent for Pong using a shared-network Actor-Critic structure.
+ * The model predicts both the action probabilities (Actor) and the state value (Critic).
+ */
+class PPOAgent {
+    constructor() {
+        // Shared Feature Extractor (e.g., CNN for Atari frames)
+        this.feature_extractor = this.createSharedLayers();
+        
+        // Policy Head (Actor): outputs action probabilities
+        this.actor = this.createActorHead(this.feature_extractor); 
+        
+        // Value Head (Critic): outputs state value V(s)
+        this.critic = this.createCriticHead(this.feature_extractor);
+        
+        // PPO Hyperparameters
+        this.GAMMA = 0.99;        // Discount factor
+        this.LAMBDA = 0.95;       // GAE decay factor
+        this.CLIP_EPSILON = 0.2;  // PPO clipping parameter
+        this.EPOCHS = 4;          // Optimization passes per data collection
+        this.MINIBATCH_SIZE = 64; // Batch size for optimization
+        
+        console.log("PPO Agent initialized (TensorFlow.js simulation)");
+    }
+
+    /**
+     * Defines the structure of the shared convolutional layers.
+     */
+    createSharedLayers() {
+        // ... CNN structure (similar to DQN) ...
+        return { outputShape: [256] }; 
+    }
+
+    /**
+     * Actor Head: Predicts a probability distribution over the 6 actions.
+     */
+    createActorHead(shared_layers) {
+        // tf.layers.dense({ units: 6, activation: 'softmax' })
+        return { predict: (state) => ({ probabilities: [0.1, 0.1, 0.4, 0.4, 0.0, 0.0] }) };
+    }
+
+    /**
+     * Critic Head: Predicts the state value V(s).
+     */
+    createCriticHead(shared_layers) {
+        // tf.layers.dense({ units: 1, activation: 'linear' })
+        return { predict: (state) => ({ value: 5.5 }) };
+    }
+
+    /**
+     * PPO Training Step (On-Policy Collection and Optimization).
+     */
+    async learn(trajectories) {
+        // 1. Calculate Generalized Advantage Estimation (GAE) for all trajectories
+        // const advantages = calculateGAE(trajectories, this.GAMMA, this.LAMBDA);
+        
+        // 2. Normalize Advantages
+        
+        // 3. For K epochs, optimize the clipped objective and the value function
+        // for (let i = 0; i < this.EPOCHS; i++) {
+            // Sample mini-batches from the trajectories
+            // Perform PPO Policy Loss update (using the clip objective)
+            // Perform Value Loss update (MSE on V(s) vs returns)
+        // }
+    }
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- PPO Clipped Objective and GAE Concept Section -->
+        <section class="mb-12 sm:mb-16 mt-12">
+            <div class="pb-2 mb-6 border-b-2 border-gray-800">
+                <h2 class="text-2xl sm:text-3xl font-bold">
+                    PPO Clipped Objective and GAE
+                </h2>
+            </div>
+
+            <p class="text-base sm:text-lg text-gray-700 mb-6">
+                The **PPO Clipped Objective** $L^{CLIP}$ prevents overly aggressive policy updates, ensuring stability. **Generalized Advantage Estimation (GAE)** $A_t^{GAE(\gamma, \lambda)}$ provides a low-variance, low-bias estimate of the advantage function $A(s,a)$.
+            </p>
+
+            <div class="code-block">
+                <pre><code>// 1. PPO Clipped Policy Loss ($\theta$ are current weights, $\theta_{old}$ are old weights)
+// $r_t(\theta)$ is the probability ratio $\frac{\pi_{\theta}(a_t | s_t)}{\pi_{\theta_{old}}(a_t | s_t)}$
+// $\hat{A}_t$ is the Advantage estimate (often GAE)
+
+$L^{CLIP}(\theta) = \hat{\mathbb{E}}_t \left[ \min(r_t(\theta) \hat{A}_t, \text{clip}(r_t(\theta), 1-\epsilon, 1+\epsilon) \hat{A}_t) \right]$
+
+// 2. Generalized Advantage Estimation (GAE)
+// GAE is a weighted average of n-step advantage estimates (TD-residuals).
+// $\delta_t = r_t + \gamma V(s_{t+1}) - V(s_t)$ (TD-residual)
+
+$A_t^{GAE(\gamma, \lambda)} = \sum_{l=0}^{\infty} (\gamma \lambda)^l \delta_{t+l}$
+
+// $\gamma$ is the discount factor, $\lambda$ controls the variance/bias trade-off.</code></pre>
+            </div>
+        </section>
+
+        <!-- Training Code Snippet Section (IPyNB) -->
+        <section class="mb-12 sm:mb-16 mt-12">
+            <div class="pb-2 mb-6 border-b-2 border-gray-800">
+                <h2 class="text-2xl sm:text-3xl font-bold">
+                    Jupyter Notebook Training Initialization
+                </h2>
+            </div>
+            <p class="text-base sm:text-lg text-gray-700 mb-6">
+                The following cells initialize the PyTorch models, environment, and training components for the $\texttt{PongNoFrameskip-v4}$ environment.
+            </p>
+            <div class="code-block">
+                <pre><code>import torch
+import torch.optim as optim
+from model import PPOActorCritic // Assuming the PPO model
+from wrappers import make_atari_env
+from ppo_buffer import PPOMemory // Specialized memory for PPO
+from utils_modif import train_ppo, test_ppo
+from Param_modif import *
+from IPython.display import clear_output
+import matplotlib.pyplot as plt
+%matplotlib inline
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device
+// Output: device(type='cuda')
+
+env_id = "PongNoFrameskip-v4"
+env = make_atari_env(env_id)
+print(env.action_space)
+// Output: Discrete(6)
+// Output: ['NOOP', 'FIRE', 'UP', 'RIGHT', 'LEFT', 'DOWN']
+
+model = PPOActorCritic(env.observation_space.shape, env.action_space.n).to(device)
+optimizer = optim.Adam(model.parameters(), lr=0.00025)
+ppo_memory = PPOMemory() // On-policy buffer
+
+// PPO training involves collecting a batch of trajectories, then optimizing
+train_ppo(env, model, optimizer, ppo_memory, device)
+</code></pre>
+            </div>
+        </section>
+
+
+        <!-- PPO Training Algorithm (Pseudo-code) -->
+        <section class="mb-12 sm:mb-16 mt-12">
+            <div class="pb-2 mb-6 border-b-2 border-gray-800">
+                <h2 class="text-2xl sm:text-3xl font-bold">
+                    PPO Training Algorithm (Pseudo-code)
+                </h2>
+            </div>
+
+            <p class="text-base sm:text-lg text-gray-700 mb-6">
+                PPO is an on-policy method that collects full trajectories from the current policy before performing multiple optimization steps on the collected data.
+            </p>
+
+            <div class="code-block">
+                <pre><code>Initialize Actor-Critic network $\pi_\theta, V_\phi$ with weights $\theta, \phi$.
+
+For $k = 0, 1, 2, \dots$ (iterations):
+  
+  // 1. Data Collection (On-Policy)
+  Collect set of trajectories $\mathcal{D}_k = \{ \tau_i \}$ by running policy $\pi_{\theta_{old}}$
+  for $T$ timesteps, storing $\{s_t, a_t, r_t, V_{\phi}(s_t), \log \pi_{\theta_{old}}(a_t | s_t)\}$.
+  
+  // 2. Advantage Estimation (GAE)
+  For each $t$ in $\mathcal{D}_k$:
+    Calculate returns $\hat{R}_t$ (for value function update).
+    Calculate GAE advantages $\hat{A}_t = \sum_{l=0}^{T-t-1} (\gamma \lambda)^l \delta_{t+l}$
+
+  // 3. Optimization
+  Optimize policy and value function for $K$ epochs using $\mathcal{D}_k$:
+    For $j = 1$ to $K$ (optimization epochs):
+      Sample mini-batch from $\mathcal{D}_k$:
+      
+      // Policy Loss (Actor)
+      Calculate probability ratio $r_t(\theta)$
+      Calculate $L^{CLIP}(\theta)$ using $\hat{A}_t$
+      Maximize $L^{CLIP}(\theta)$ with respect to $\theta$.
+      
+      // Value Loss (Critic)
+      Calculate Squared Error Loss $L^{VF}(\phi) = (\hat{R}_t - V_{\phi}(s_t))^2$
+      Minimize $L^{VF}(\phi)$ with respect to $\phi$.
+      
+      // Optional: Add Entropy Loss $L^S(\theta)$ for exploration.
+      
+  Set $\theta_{old} = \theta$
+</code></pre>
+            </div>
+        </section>
+
+        <!-- Training Performance Graphs Section -->
+        <section class="mb-12 sm:mb-16 mt-12">
+            <div class="pb-2 mb-6 border-b-2 border-gray-800">
+                <h2 class="text-2xl sm:text-3xl font-bold">
+                    Training Performance Metric (Episodic Reward)
+                </h2>
+            </div>
+            <p class="text-base sm:text-lg text-gray-700 mb-6">
+                The graph below illustrates the agent's performance by tracking the episodic reward curve over training steps. 
+            </p>
+
+            <div class="mx-auto max-w-4xl">
+                <!-- Graph 1: Reward History (Now full width) -->
+                <div class="container-border rounded-lg overflow-hidden p-3 bg-gray-100">
+                    <p class="text-sm font-semibold mb-2 text-center text-gray-800">EPISODIC REWARD HISTORY</p>
+                    <img
+                        src="ponresu.png"
+                        onerror="this.onerror=null; this.src='https://placehold.co/800x450/9ca3af/1f2937?text=REWARD+VS+EPISODE+GRAPH+(BIGGER)';this.className='w-full h-auto object-cover container-border rounded';"
+                        alt="Graph showing episodic reward history"
+                        class="w-full h-auto object-cover container-border rounded"
+                    >
+                </div>
+            </div>
+        </section>
+
+        <footer class="text-center pt-8 border-t-2 border-gray-400 mt-12">
+            <p class="text-gray-600 font-mono text-xs sm:text-sm">A Reinforcement Learning Documentation Project | Built with Simplicity and Contrast.</p>
+        </footer>
+    </div>
+</body>
+</html>

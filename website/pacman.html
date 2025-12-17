@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ms. Pac-Man DRQN Agent - Project Documentation</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for a monochrome, high-contrast look */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff; /* White background */
+            color: #1f2937; /* Very dark gray text */
+        }
+        .container-border {
+            border: 2px solid #1f2937; /* Strong black border */
+            box-shadow: 6px 6px 0px 0px #9ca3af; /* Simple grayscale shadow */
+        }
+        .code-block {
+            background-color: #1f2937; /* Dark background for code */
+            color: #e5e7eb; /* Light gray text for contrast */
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            border: 1px solid #9ca3af;
+        }
+        /* Ensure max-width on mobile doesn't break layout */
+        .max-w-7xl {
+             max-width: 100%;
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+
+        <!-- Header Section -->
+        <header class="text-center mb-12 sm:mb-16">
+            <div class="inline-block p-4 container-border rounded-lg bg-gray-50">
+                <h1 class="text-4xl sm:text-5xl font-extrabold mb-2">
+                    MS. PAC-MAN: DRQN AGENT
+                </h1>
+                <p class="text-lg sm:text-xl font-medium text-gray-700">
+                    Deep Recurrent Q-Network (DRQN) for Sequential Decision Making
+                </p>
+            </div>
+        </header>
+
+        <!-- Agent Demo Section -->
+        <div class="mt-8 sm:mt-10 mx-auto max-w-xl container-border rounded-lg overflow-hidden p-3 bg-gray-100">
+            <p class="text-sm font-semibold mb-2 text-center text-gray-800">AGENT PERFORMANCE DEMO</p>
+            <!-- GIF Placeholder: Replace the src below with your animated GIF URL -->
+            <img
+                src="interactive.gif"
+                onerror="this.onerror=null; this.src='https://placehold.co/700x400/9ca3af/1f2937?text=PLACE+YOUR+MS.+PAC-MAN+AGENT+GIF+HERE';"
+                alt="DRQN Agent playing Ms. Pac-Man"
+                class="w-full h-auto object-cover container-border rounded"
+            >
+        </div>
+
+        <!-- Project Overview Section -->
+        <section class="mb-12 sm:mb-16 mt-16">
+            <div class="pb-2 mb-6 border-b-2 border-gray-800">
+                <h2 class="text-2xl sm:text-3xl font-bold">
+                    Project Goal: Tackling Delayed Rewards
+                </h2>
+            </div>
+            <p class="text-base sm:text-lg text-gray-700 mb-6">
+                The Ms. Pac-Man environment is challenging due to sparse and delayed rewards (e.g., eating a power pellet provides a large reward, but the state sequence leading up to it might be long and complex). The **Deep Recurrent Q-Network (DRQN)** addresses this by integrating recurrent layers (like LSTM or GRU) to maintain an internal representation of the game history, making the agent more robust to partially observable states and the long-term credit assignment problem.
+            </p>
+            <ul class="list-disc list-inside space-y-2 text-base sm:text-lg text-gray-700 ml-4">
+                <li>**Recurrent Layers:** Used after convolutional feature extraction to maintain memory of past states and actions.</li>
+                <li>**Epsilon-Greedy Annealing:** Gradually reduces the exploration rate ($\epsilon$) over time to ensure the agent explores initially and exploits its learned policy later.</li>
+                <li>**Truncated Backpropagation Through Time (TBPTT):** An efficient optimization schedule to train the recurrent network.</li>
+            </ul>
+        </section>
+
+        <!-- DRQN Architecture Section -->
+        <section class="mb-12 sm:mb-16 mt-16 sm:mt-20">
+            <div class="pb-2 mb-6 border-b-2 border-gray-800">
+                <h2 class="text-2xl sm:text-3xl font-bold">
+                    DRQN Network Architecture
+                </h2>
+            </div>
+
+            <p class="text-base sm:text-lg text-gray-700 mb-6">
+                The network structure replaces the final fully-connected layers of a standard DQN with a Recurrent Layer (LSTM or GRU). The input to the network is a sequence of states, not just a single frame.
+            </p>
+
+            <div class="code-block">
+                <pre><code>/**
+ * Deep Recurrent Q-Network (DRQN) Structure
+ * Based on the DQN approach, but integrates memory.
+ */
+class DRQNModel {
+    constructor(input_shape, num_actions) {
+        // 1. Feature Extraction (e.g., CNN)
+        // input: sequence of (4, 84, 84) frames
+        this.cnn_layers = this.createCNN(input_shape);
+        
+        // 2. Recurrent Layer (LSTM or GRU)
+        // input: sequence of flattened CNN outputs
+        // output: sequence of hidden states, maintaining memory (h, c)
+        this.recurrent_layer = new LSTM({ units: 512, returnSequences: true });
+
+        // 3. Output Layer (Q-Values)
+        // input: hidden state sequence
+        // output: sequence of Q-values for each action
+        this.q_output_layer = new Dense({ units: num_actions, activation: 'linear' });
+        
+        console.log("DRQN Model initialized (LSTM/GRU integrated)");
+    }
+
+    /**
+     * The forward pass processes a sequence of states and returns Q-values.
+     * The hidden state (h, c) is carried forward between training steps.
+     */
+    forward(state_sequence, hidden_state) {
+        // features_sequence = this.cnn_layers.call(state_sequence);
+        // recurrent_output, new_hidden_state = this.recurrent_layer.call(features_sequence, hidden_state);
+        // q_values_sequence = this.q_output_layer.call(recurrent_output);
+        // return q_values_sequence, new_hidden_state;
+    }
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- TBPTT and Annealing Section -->
+        <section class="mb-12 sm:mb-16 mt-12">
+            <div class="pb-2 mb-6 border-b-2 border-gray-800">
+                <h2 class="text-2xl sm:text-3xl font-bold">
+                    TBPTT and Epsilon Annealing
+                </h2>
+            </div>
+
+            <p class="text-base sm:text-lg text-gray-700 mb-6">
+                **Truncated Backpropagation Through Time (TBPTT)** is essential for training the DRQN efficiently. Instead of backpropagating the error across the entire episode (which is computationally expensive and slow), the sequence is cut into fixed-length segments ($k$ steps).
+            </p>
+
+            <div class="code-block">
+                <pre><code>// Pseudocode for TBPTT optimization in DRQN
+
+// Initialize hidden state (h_0, c_0) to zero
+hidden_state = (zeros(512), zeros(512))
+
+// Iterate through the collected sequence of experiences
+for t in range(0, sequence_length, k):
+    // 1. Get a sequence segment of length k
+    segment_s = states[t : t + k]
+    segment_a = actions[t : t + k]
+    segment_r = rewards[t : t + k]
+    
+    // 2. Perform forward pass and calculate loss
+    q_values, next_hidden_state = drqn.forward(segment_s, hidden_state)
+    loss = calculate_drqn_loss(q_values, segment_a, segment_r)
+
+    // 3. Backpropagate the loss
+    // The gradient is only calculated through the k steps of the segment.
+    loss.backward()
+    optimizer.step()
+
+    // 4. Detach and carry the hidden state forward
+    // This is the "truncation" step.
+    hidden_state = next_hidden_state.detach() 
+
+// Epsilon Annealing Schedule
+// The exploration rate $\epsilon$ is decayed linearly or exponentially 
+// from $\epsilon_{start}$ (e.g., 1.0) to $\epsilon_{end}$ (e.g., 0.01).
+$\epsilon_t = \max(\epsilon_{end}, \epsilon_{start} - (\epsilon_{start} - \epsilon_{end}) \cdot \frac{\text{steps}}{\text{annealing\_steps}})$</code></pre>
+            </div>
+        </section>
+
+        <!-- Referenced Code Section -->
+        <section class="mb-12 sm:mb-16 mt-12">
+            <div class="pb-2 mb-6 border-b-2 border-gray-800">
+                <h2 class="text-2xl sm:text-3xl font-bold">
+                    Referenced Pac-Man Agent Code
+                </h2>
+            </div>
+            <p class="text-base sm:text-lg text-gray-700 mb-6">
+                The Python code below provides the foundation for the basic Q-Learning and Approximate Q-Learning agents, which the DRQN extends using deep learning and recurrence. This code implements the core functions for Q-value lookup, action selection, and the Bellman update rule.
+            </p>
+            <a href="qlearning.py" class="inline-block px-6 py-3 bg-gray-800 text-white font-bold rounded-lg hover:bg-gray-700 transition container-border shadow-lg">
+                View qlearning_agents.py
+            </a>
+        </section>
+
+        <footer class="text-center pt-8 border-t-2 border-gray-400 mt-12">
+            <p class="text-gray-600 font-mono text-xs sm:text-sm">A Reinforcement Learning Documentation Project | Built with Simplicity and Contrast.</p>
+        </footer>
+    </div>
+</body>
+</html>
