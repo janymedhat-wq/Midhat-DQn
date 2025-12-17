@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep Reinforcement Learning Portfolio</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        /* --- Base Theme Variables (Light Mode: High Contrast) --- */
+        :root {
+            --primary-font: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+            --secondary-font: var(--primary-font);
+            
+            --text-color: #111827;            
+            --secondary-text-color: #6b7280;   
+            --background-color: #f7f7f7;       
+            --accent-color: #000000;           
+            --card-bg-color: #ffffff;          
+            --border-color: #e5e7eb;           
+            --hover-bg-color: #f0f0f0;         
+        }
+
+        /* --- Dark Theme Variables (Clean Minimal Dark) --- */
+        body.dark-theme {
+            --text-color: #e5e7eb;            
+            --secondary-text-color: #9ca3af;  
+            --background-color: #171717;      
+            --accent-color: #ffffff;          
+            --card-bg-color: #262626;         
+            --border-color: #374151;          
+            --hover-bg-color: #333333;        
+        }
+        
+        /* Basic reset and typography */
+        body {
+            font-family: var(--secondary-font);
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+            /* Removed custom cursor logic */
+            overflow-x: hidden;
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        h1, h2, h3 {
+            font-family: var(--primary-font);
+            font-weight: 700;
+            color: var(--accent-color);
+            transition: color 0.3s ease;
+        }
+
+        /* --- General Section Styling (Clean Cards) --- */
+        .gallery-section {
+            padding: 4rem 1rem;
+            text-align: center;
+        }
+
+        .gallery-box {
+            background-color: var(--card-bg-color);
+            border-radius: 1rem;
+            padding: 2.5rem 1.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            border: 1px solid var(--border-color);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        
+        /* Gallery Project Card Styling */
+        .gallery-item {
+            background-color: var(--card-bg-color);
+            border-radius: 1rem;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s;
+            display: flex;
+            flex-direction: column;
+            height: auto;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Thumbnail Image Style */
+        .project-thumbnail {
+            width: 100%;
+            height: 200px; 
+            object-fit: cover; 
+            border-bottom: 1px solid var(--border-color);
+            display: block;
+        }
+        
+        /* Fallback for broken thumbnails */
+        .project-thumbnail.broken {
+            background-color: var(--hover-bg-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--secondary-text-color);
+            font-size: 0.8rem;
+            text-align: center;
+            padding: 1rem;
+            line-height: 1.2;
+        }        
+        .project-thumbnail.broken::before {
+            /* Updated fallback text to mention GIF */
+            content: "AI Model GIF/Image Failed to Load";
+        }
+
+        .project-info {
+            padding: 1.5rem;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1; 
+        }
+        
+        /* Visit Button Styling (Primary CTA Style) */
+        .visit-button {
+            margin-top: auto; 
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            background-color: var(--accent-color) !important; 
+            color: var(--card-bg-color) !important; 
+            border: 1px solid var(--accent-color);
+        }
+
+        .visit-button:hover {
+            opacity: 0.95;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+            transform: translateY(-1px);
+        }
+        
+        /* Theme Toggle Button Style */        
+        #theme-toggle {            
+            position: absolute;            
+            top: 1.5rem;            
+            right: 1.5rem;            
+            width: 44px;            
+            height: 44px;            
+            background-color: var(--card-bg-color);            
+            color: var(--text-color);            
+            border: 1px solid var(--border-color);            
+            border-radius: 50%;            
+            display: flex;            
+            align-items: center;            
+            justify-content: center;            
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);            
+            transition: all 0.3s ease;            
+            z-index: 10;        
+        }
+
+        #theme-toggle:hover {            
+            background-color: var(--hover-bg-color);            
+            border-color: var(--text-color);        
+        }
+
+        @media (max-width: 768px) {            
+            .gallery-section { padding: 2rem 0; }            
+            .gallery-box { padding: 1.5rem 0.5rem; }            
+            #theme-toggle { top: 0.75rem; right: 0.75rem; }        
+        }    
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    
+    <div class="max-w-7xl mx-auto relative">        
+        <!-- Theme Toggle Button -->        
+        <button id="theme-toggle" title="Toggle Theme: Light or Dark">
+            <svg id="theme-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <!-- Icon content is dynamically set by JS based on current theme -->
+            </svg>
+        </button>
+        
+        <!-- Header -->        
+        <header class="text-center mb-12 md:mb-16 pt-8">
+            <h1 class="text-5xl font-extrabold mb-3 tracking-tight">Deep Reinforcement Learning</h1>
+            <p class="text-xl max-w-3xl mx-auto" style="color: var(--secondary-text-color);">
+                A focused showcase of five advanced RL agents solving complex Atari environments.
+            </p>        
+        </header>
+        
+        <!-- AI Projects Section -->        
+        <section id="website-gallery" class="gallery-section">
+            <h2 class="text-3xl font-extrabold mb-3 tracking-tight">Atari DeepRL Artifacts</h2>
+            <p class="text-lg mb-12 max-w-3xl mx-auto" style="color: var(--secondary-text-color);">
+                Five high-impact projects detailing complex implementations, with a direct link to the source code.
+            </p>
+            
+            <div class="gallery-box">
+                <!-- Responsive Grid for Gallery (5 Projects + 1 Repo Link = 6 items) -->
+                <div id="gallery-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                    <!-- AI project cards will be generated here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="text-center py-12 text-sm" style="color: var(--secondary-text-color);">
+            <p>&copy; 2024 DeepRL Portfolio. All rights reserved.</p>
+        </footer>
+    </div>    
+
+    <!-- JavaScript for theme logic and gallery generation -->    
+    <script>        
+        // --- AI Project Data (5 Atari Projects + 1 Master List Link) ---        
+        const websiteProjects = [            
+            {
+                name: "DeepRL_boxing.ipynb",
+                url: "website/boxing.html",
+                description: "Optimized Double DQN implementation with Dueling Network Architecture (DDA) to stabilize training in the high-frequency action space of Boxing, mitigating Q-value overestimation.",
+                // MOCK GIF URL - REPLACE WITH ACTUAL GIF
+                thumbnailURL: "website/boxing_500.gif",
+            },
+            {
+                name: "DeepRL_breakout.ipynb",
+                url: "website/breakout.html",
+                description: "Leveraging a DQN architecture with Prioritized Experience Replay (PER) for accelerated training and stability, demonstrating convergence to super-human performance on the high-dimensional state space of Breakout.",
+                // MOCK GIF URL - REPLACE WITH ACTUAL GIF
+                thumbnailURL: "website/breakout_5000.gif",
+            },
+            {
+                name: "DeepRL_pong.ipynb",
+                url: "website/pong.html",
+                description: "Development of a highly parallelized Proximal Policy Optimization (PPO) agent utilizing Generalized Advantage Estimation (GAE) to achieve optimal policies in the competitive, low-latency Atari Pong environment.",
+                // MOCK GIF URL - REPLACE WITH ACTUAL GIF
+                thumbnailURL: "website/ponggif.gif",
+            },
+          {
+    name: "flappy bird game",
+    url: "website/flappybird.html",
+    description: "An AI-driven Flappy Bird implementation using Evolutionary Strategies (ES) to optimize neural network policies. The system evolves generations of agents that learn to navigate the pipes, improving performance through distributed fitness evaluation across multiple nodes.",
+    thumbnailURL: "website/flappy-bird.gif",
+}, 
+            {
+                name: "DeepRL_pacman.ipynb",
+                url: "website/pacman.html",
+                description: "Tackling the delayed reward problem in Ms. Pac-Man using a Deep Recurrent Q-Network (DRQN) with epsilon-greedy annealing and a truncated backpropagation through time (TBPTT) optimization schedule.",
+                // MOCK GIF URL - REPLACE WITH ACTUAL GIF
+                thumbnailURL: "website/interactive.gif",
+            },
+            {
+    name: "Q*bert AI",
+    url: "website/qbert.html",
+    description: "An AI agent playing Q*bert using Evolutionary Strategies (ES) to optimize neural network policies. The system evolves generations of agents that learn to navigate the pyramid, avoid enemies, and maximize points, all through distributed fitness evaluation.",
+    thumbnailURL: "website/qbert.gif",
+},
+            // The "Master List" link as the 6th card (No GIF needed here, static image is fine)
+            {
+                name: "Master Project Repository & Readmes",
+                url: "https://github.com/your-repo/atari-deeprl", 
+                description: "Comprehensive list of all project readmes, full documentation, and source code on GitHub, organized by algorithm type.",
+                thumbnailURL: "website/qbert.gif",
+                buttonText: "View Master List \u2192" 
+            }, 
+ 
+        ];
+
+        // --- Theme Logic ---        
+        const THEMES = ['light', 'dark']; 
+        const body = document.body;        
+        const toggleButton = document.getElementById('theme-toggle');        
+        const themeIcon = document.getElementById('theme-icon');        
+        let currentTheme = localStorage.getItem('theme') || 'dark';
+
+        function applyTheme(theme) {            
+            body.className = 'p-4 md:p-8'; 
+            if (theme === 'dark') {                
+                body.classList.add(`dark-theme`);            
+            }            
+            localStorage.setItem('theme', theme);            
+            currentTheme = theme;            
+            updateThemeIcon(theme);        
+        }
+
+        function toggleTheme() {            
+            const currentIndex = THEMES.indexOf(currentTheme);            
+            const nextIndex = (currentIndex + 1) % THEMES.length;            
+            const nextTheme = THEMES[nextIndex];            
+            applyTheme(nextTheme);        
+        }
+
+        function updateThemeIcon(theme) {            
+            themeIcon.innerHTML = ''; 
+            let svgContent = '';
+            
+            if (theme === 'dark') {                
+                svgContent = '<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>';                
+                themeIcon.title = "Toggle Theme: Dark Mode Active";            
+            } else {                
+                svgContent = '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>';                
+                themeIcon.title = "Toggle Theme: Light Mode Active";            
+            }            
+            themeIcon.innerHTML = svgContent;        
+        }
+
+        // --- UI Element Creation Functions ---
+        
+        function createGalleryCard(project) {            
+            const card = document.createElement('div');            
+            card.className = 'gallery-item';
+            
+            card.title = `${project.name}: ${project.description} (Click to view file)`;
+            
+            const thumbnailImg = document.createElement('img');            
+            thumbnailImg.className = 'project-thumbnail rounded-t-xl';            
+            thumbnailImg.src = project.thumbnailURL;            
+            thumbnailImg.alt = `Thumbnail for ${project.name}`;            
+            thumbnailImg.loading = 'lazy'; 
+            
+            thumbnailImg.onerror = function() {                
+                this.onerror = null; 
+                this.src = ''; 
+                this.classList.add('broken'); 
+            };
+            
+            const infoDiv = document.createElement('div');            
+            infoDiv.className = 'project-info';
+            
+            const nameLink = document.createElement('a');            
+            nameLink.href = project.url;            
+            nameLink.target = '_blank';            
+            nameLink.className = 'text-xl font-bold tracking-tight hover:underline block mb-2';
+            nameLink.style.color = 'var(--text-color)'; 
+            nameLink.textContent = project.name;            
+            nameLink.setAttribute('role', 'link');
+            
+            const descP = document.createElement('p');            
+            descP.className = 'text-sm mb-4 flex-grow'; 
+            descP.style.color = 'var(--secondary-text-color)';
+            descP.textContent = project.description;
+            
+            const visitButton = document.createElement('a');            
+            visitButton.href = project.url;            
+            visitButton.target = '_blank';            
+            visitButton.className = 'visit-button inline-block px-4 py-2 text-xs rounded-lg transition-all duration-200';
+            visitButton.textContent = project.buttonText || 'View File \u2192'; 
+            visitButton.setAttribute('role', 'button');
+            
+            infoDiv.appendChild(nameLink);            
+            infoDiv.appendChild(descP);            
+            infoDiv.appendChild(visitButton);
+            
+            card.appendChild(thumbnailImg);           
+            card.appendChild(infoDiv);
+            
+            return card;        
+        }
+
+        // Initialize and setup handlers        
+        document.addEventListener('DOMContentLoaded', () => {            
+            const galleryGridContainer = document.getElementById('gallery-grid');
+            
+            // 1. Initialize Theme            
+            applyTheme(currentTheme);            
+            toggleButton.addEventListener('click', toggleTheme);
+            
+            // 2. Gallery Generation (5 AI Projects + 1 Master List = 6 items)            
+            websiteProjects.slice(0, 6).forEach(project => {                
+                galleryGridContainer.appendChild(createGalleryCard(project));            
+            });     
+        });    
+    </script>
+</body>
+</html>
